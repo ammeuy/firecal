@@ -1,0 +1,18 @@
+[package]
+name = "firecal-query"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Area series, climatology, anomaly, analog years and CSV text"
+publish.workspace = true
+
+[dependencies]
+firecal-types.workspace = true
+
+[dev-dependencies]
+firecal-testkit.workspace = true
+
+[lints]
+workspace = true

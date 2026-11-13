@@ -1,0 +1,15 @@
+[package]
+name = "firecal-ingest"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "FIRMS hotspot files to per-satellite cell-month aggregates"
+publish.workspace = true
+
+[dependencies]
+firecal-types.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,19 @@
+[package]
+name = "firecal-wasm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "The browser build: plain extern C over linear-memory buffers"
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+firecal-types.workspace = true
+firecal-query.workspace = true
+
+[lints]
+workspace = true

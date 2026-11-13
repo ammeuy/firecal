@@ -1,0 +1,15 @@
+[package]
+name = "firecal-harmonize"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Aggregates to harmonized tiles: VIIRS to MODIS-equivalent, with sigma"
+publish.workspace = true
+
+[dependencies]
+firecal-types.workspace = true
+
+[lints]
+workspace = true
