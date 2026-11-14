@@ -3,6 +3,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '../tokens/tokens.css';
 import './style.css';
 import sample from '../stub/series.json';
+import { mountCalendar } from '../calendar/index.ts';
+import { loadFirecal } from '../../wasm/load.ts';
 import { createAreaMap } from '../map/map.ts';
 import {
   AREA_SELECTED_EVENT,
@@ -20,11 +22,13 @@ if (!root) throw new Error('The app root is missing');
 
 const series = parseSeries(sample);
 const shell = renderShell(root, series);
-const state: { area: Area; bounds: AreaBoundsText; error: string } = {
+const state: { area: Area; series: typeof series; bounds: AreaBoundsText; error: string } = {
   area: series.area,
+  series,
   bounds: boundsFromArea(series.area),
   error: '',
 };
+const calendar = mountCalendar(shell.calendarHost, state.series);
 const map = createAreaMap(shell.mapHost, (area) => emitAreaSelected(root, area));
 map.once('load', () => {
   map.fitBounds([[state.area.west, state.area.south], [state.area.east, state.area.north]], { padding: 36, maxZoom: 8 });
@@ -49,6 +53,7 @@ root.addEventListener(AREA_SELECTED_EVENT, (event) => {
   const area = areaFromSelectionEvent(event);
   if (!area) return;
   state.area = area;
+  state.series = { ...series, area };
   state.bounds = boundsFromArea(area);
   state.error = '';
   render();
@@ -66,6 +71,7 @@ function render(): void {
   shell.areaStatus.textContent = state.error;
   shell.mapBounds.textContent = `${state.area.west} / ${state.area.south} — ${state.area.east} / ${state.area.north}`;
   shell.mapCoordinates.textContent = `${state.area.west}° / ${state.area.south}°`;
+  calendar.update(state.series);
 }
 
 function readAreaBounds(inputs: Record<keyof AreaBoundsText, HTMLInputElement>): AreaBoundsText {
@@ -90,8 +96,8 @@ async function loadRuntime(status: HTMLOutputElement): Promise<void> {
   try {
     const response = await fetch('/firecal.wasm');
     if (!response.ok) throw new Error('Run `cargo xtask build-wasm` from the repository root first.');
-    await WebAssembly.instantiate(await response.arrayBuffer(), {});
-    status.textContent = 'Firecal core loaded · sample Series active';
+    await loadFirecal(await response.arrayBuffer());
+    status.textContent = 'Core loaded. The calendar shows the hand-made sample until a region is pinned.';
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : 'The Firecal core could not be loaded.';
   }
